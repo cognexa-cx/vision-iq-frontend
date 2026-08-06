@@ -63,7 +63,7 @@ function useSiren(triggered, muted) {
     const el = audioRef.current;
     if (el && !mutedRef.current) {
       el.currentTime = 0;
-      el.play().catch(() => {});
+      el.play().catch(() => { });
     }
     setTimeout(() => {
       stopAudio();
@@ -98,7 +98,7 @@ function useSiren(triggered, muted) {
       el.currentTime = 0;
     } else if (trigRef.current && inPlayPhase.current) {
       el.currentTime = 0;
-      el.play().catch(() => {});
+      el.play().catch(() => { });
     }
   }, [muted]);
 
@@ -234,21 +234,21 @@ export default function Animal({ active = true, wsDetections = null }) {
             style={
               muted
                 ? {
-                    background: "#f1f5f9",
-                    border: "1px solid #cbd5e1",
-                    color: "#94a3b8",
-                  }
+                  background: "#f1f5f9",
+                  border: "1px solid #cbd5e1",
+                  color: "#94a3b8",
+                }
                 : isAlert
                   ? {
-                      background: "#fef2f2",
-                      border: "1px solid #fca5a5",
-                      color: "#ef4444",
-                    }
+                    background: "#fef2f2",
+                    border: "1px solid #fca5a5",
+                    color: "#ef4444",
+                  }
                   : {
-                      background: "#f0fdf4",
-                      border: "1px solid #86efac",
-                      color: "#22c55e",
-                    }
+                    background: "#f0fdf4",
+                    border: "1px solid #86efac",
+                    color: "#22c55e",
+                  }
             }
           >
             <span className="text-base">{muted ? "🔇" : "🔊"}</span>
@@ -335,10 +335,10 @@ export default function Animal({ active = true, wsDetections = null }) {
               const isNone = !row.animal;
               const rc = isNone
                 ? {
-                    badge: "bg-gray-100 text-gray-500",
-                    dot: "bg-gray-400",
-                    label: "CLEAR",
-                  }
+                  badge: "bg-gray-100 text-gray-500",
+                  dot: "bg-gray-400",
+                  label: "CLEAR",
+                }
                 : getConfig(row.dangerous);
               return (
                 <div
