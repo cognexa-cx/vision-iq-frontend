@@ -39,8 +39,8 @@ export default function LogsTable({ logs }: LogsTableProps) {
               const sev = STATUS_COLORS[log.status];
               return (
                 <tr key={log.id} className="border-t" style={{ borderColor: "#F0F0F0" }}>
-                  <td className={`${rowCellCls} pl-6 whitespace-nowrap`} style={{ color: "#00183E" }}>{formatLogTime(log.time)}</td>
-                  <td className={`${rowCellCls} whitespace-nowrap`} style={{ color: "#00183E" }}>{log.eventType}</td>
+                  <td className={`${rowCellCls} pl-6`} style={{ color: "#00183E" }}>{formatLogTime(log.time)}</td>
+                  <td className={rowCellCls} style={{ color: "#00183E" }}>{log.eventType}</td>
                   <td className={`${rowCellCls} truncate`} style={{ color: "#00183E" }}>{log.description}</td>
                   <td className={`${rowCellCls} pr-6`}>
                     <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap" style={{ background: sev.bg, color: sev.text }}>

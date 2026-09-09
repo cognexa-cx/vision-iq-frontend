@@ -15,11 +15,11 @@ import licenseIcon from "../../assets/figma-icon-license.svg";
 const NAV_ITEMS = [
   { id: "dashboard", label: "Dashboard", icon: dashboardIcon },
   { id: "monitoring", label: "Monitoring", icon: monitorIcon },
-  { id: "events", label: "Events", icon: eventIcon },
   { id: "cameraMaster", label: "Camera Master", Icon: Camera },
-  { id: "setting", label: "Settings", icon: settingsIcon },
-  { id: "license", label: "License", icon: licenseIcon },
+  { id: "events", label: "Events", icon: eventIcon },
   { id: "logs", label: "Logs", Icon: ScrollText },
+  { id: "license", label: "License", icon: licenseIcon },
+  { id: "setting", label: "Settings", icon: settingsIcon },
 ];
 
 export default function Sidebar({ active = "dashboard", onNavigate, collapsed = true }) {

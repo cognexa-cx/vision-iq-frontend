@@ -98,8 +98,8 @@ export default function LogsPage() {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <LogsCategoryTabs active={category} onChange={setCategory} />
 
-          <div className="flex items-center gap-3">
-            <div className="relative">
+          <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+            <div className="relative flex-1 min-w-[160px] sm:flex-none">
               <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
               <input
                 type="text"
@@ -107,7 +107,7 @@ export default function LogsPage() {
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search logs…"
                 aria-label="Search logs"
-                className="h-10 w-[220px] pl-10 pr-3 rounded-[10px] bg-white text-sm border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#3D0C92]/20"
+                className="h-10 w-full sm:w-[220px] pl-10 pr-3 rounded-[10px] bg-white text-sm border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#3D0C92]/20"
                 style={{ color: "#00183E" }}
               />
             </div>
