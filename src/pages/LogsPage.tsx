@@ -147,7 +147,7 @@ export default function LogsPage() {
         </div>
 
         <div
-          className="flex-1 min-h-[360px] rounded-[20px] shadow-[0_20px_45px_-10px_rgba(61,12,146,0.18)] flex flex-col overflow-hidden"
+          className="min-h-[180px] max-h-full rounded-[20px] shadow-[0_20px_45px_-10px_rgba(61,12,146,0.18)] flex flex-col overflow-hidden"
           style={{ background: "rgba(255,255,255,0.6)" }}
         >
           <LogsTable logs={filteredLogs} />
