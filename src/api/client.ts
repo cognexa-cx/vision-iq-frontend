@@ -81,9 +81,18 @@ export async function apiGet<T = any>(
   endpoint: string,
   base: string = BASE_URL,
 ): Promise<T> {
-  const res = await fetch(`${base}${endpoint}`, {
-    headers: defaultHeaders,
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${base}${endpoint}`, {
+      headers: defaultHeaders,
+      signal: AbortSignal.timeout(4000),
+    });
+  } catch (err) {
+    if (err instanceof DOMException && err.name === "TimeoutError") {
+      throw new Error(`GET ${endpoint} timed out — backend unreachable`);
+    }
+    throw err;
+  }
   if (!res.ok) throw new Error(`GET ${endpoint} failed: ${res.status}`);
   return res.json();
 }

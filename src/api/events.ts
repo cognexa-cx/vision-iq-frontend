@@ -3,9 +3,15 @@ import { apiGet, BASE_URL } from "./client";
 export interface DetectionEvent {
   id: string | number;
   camera_id?: string | number;
+  camera_name?: string;
   type?: string;
+  event_type?: string;
+  severity?: "critical" | "high" | "medium" | "low" | string;
+  zone?: string;
+  zone_no?: string;
   timestamp?: string;
   created_at?: string;
+  snapshot_path?: string | null;
   [key: string]: unknown;
 }
 

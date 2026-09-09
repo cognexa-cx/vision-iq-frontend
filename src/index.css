@@ -13,6 +13,26 @@ html {
   height: 100%;
 }
 
+/* Themed scroll slider — used on the Events table and similar scroll areas */
+.themed-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #A78BDA transparent;
+}
+.themed-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.themed-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.themed-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #3D0C92 0%, #031EBA 100%);
+  border-radius: 999px;
+}
+.themed-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #4d18a8 0%, #0428d4 100%);
+}
+
 body {
   width: 100%;
   height: 100vh;

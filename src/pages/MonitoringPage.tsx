@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import CameraGrid from "../components/Monitoring/CameraGrid";
 import AddCameraModal from "../components/Monitoring/AddCameraModal";
-import Footer from "../components/Common/Footer";
 
 // Enabled modes first, then disabled — keeps the dropdown ordered by
 // what's actually usable right now.
@@ -26,7 +25,7 @@ const ENABLED_MODES = new Set([
   "PPE Kit Detection",
 ]);
 
-export default function MonitoringPage({ isCollapsed = false, onAddCamera }) {
+export default function MonitoringPage({ onAddCamera }) {
   const [showModeDropdown, setShowModeDropdown] = useState(false);
   const [selectedMode, setSelectedMode] = useState("");
   const [showAddCamera, setShowAddCamera] = useState(false);
@@ -56,10 +55,7 @@ export default function MonitoringPage({ isCollapsed = false, onAddCamera }) {
 
   return (
     <div
-      className={`fixed font-poppins top-[80px] right-0 bottom-0 flex flex-col transition-all duration-300
-        left-0 md:left-[80px]
-        ${isCollapsed ? "lg:left-[80px]" : "lg:left-[280px]"}
-      `}
+      className="w-full h-full font-poppins flex flex-col"
       style={{ background: "#F8F8F8" }}
     >
       <div className="flex-1 min-h-0 overflow-y-auto flex flex-col">
@@ -167,8 +163,6 @@ export default function MonitoringPage({ isCollapsed = false, onAddCamera }) {
           />
         </div>
       </div>
-
-      <Footer />
 
       {showAddCamera && (
         <AddCameraModal

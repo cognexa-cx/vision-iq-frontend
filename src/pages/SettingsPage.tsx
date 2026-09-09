@@ -1,6 +1,5 @@
 // src/pages/SettingsPage.jsx
 import React, { useState } from "react";
-import Footer from "../components/Common/Footer";
 
 // ─── Toggle Switch Component ──────────────────────────────
 const Toggle = ({ enabled, onChange }) => (
@@ -30,7 +29,7 @@ const Section = ({ title, description, children }) => (
 );
 
 // ─── Page Component ───────────────────────────────────────
-export default function SettingsPage({ isCollapsed = false }) {
+export default function SettingsPage() {
   // Dummy states for interactive toggles/fields
   const [autoStart, setAutoStart] = useState(true);
   const [notifications, setNotifications] = useState(true);
@@ -48,10 +47,7 @@ export default function SettingsPage({ isCollapsed = false }) {
 
   return (
     <div
-      className={`fixed font-poppins top-[80px] right-0 bottom-0 flex flex-col transition-all duration-300
-        left-0 md:left-[80px]
-        ${isCollapsed ? "lg:left-[80px]" : "lg:left-[280px]"}
-      `}
+      className="w-full h-full font-poppins flex flex-col"
       style={{ background: "#F4F6F8" }}
     >
       <div className="flex-1 min-h-0 overflow-y-auto flex flex-col">
@@ -334,7 +330,6 @@ export default function SettingsPage({ isCollapsed = false }) {
           </div>
         </div>
       </div>
-      <Footer />
     </div>
   );
 }

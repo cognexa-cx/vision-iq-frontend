@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from "react";
-import Footer from "../components/Common/Footer";
 import ConfirmModal from "../components/shared/ConfirmModal";
 import { useFireRtspSessions } from "../hooks/useFireRtspSessions";
 import {
@@ -125,7 +124,7 @@ function useFireStatus(jobId, isRunning) {
   return { isAlert: isRunning && (fire || smoke), fire, smoke };
 }
 
-export default function FireDetectionPage({ isCollapsed = false }) {
+export default function FireDetectionPage() {
   const [rtspUrl, setRtspUrl] = useState("");
   const [cameraName, setCameraName] = useState("");
   const [expandedId, setExpandedId] = useState(null);
@@ -172,8 +171,7 @@ export default function FireDetectionPage({ isCollapsed = false }) {
 
   return (
     <div
-      className={`fixed font-poppins top-[80px] right-0 bottom-0 flex flex-col transition-all duration-300 left-0 md:left-[80px] ${isCollapsed ? "lg:left-[80px]" : "lg:left-[280px]"
-        }`}
+      className="w-full h-full font-poppins flex flex-col"
       style={{ background: "#F4F6F8" }}
     >
       <div className="flex-1 min-h-0 overflow-y-auto">
@@ -253,8 +251,6 @@ export default function FireDetectionPage({ isCollapsed = false }) {
           )}
         </div>
       </div>
-
-      <Footer />
 
       {expandedCam && (
         <FireCameraModal

@@ -1,62 +1,83 @@
-import { Bell, Menu } from "lucide-react";
-import hyundaiLogo from "../../assets/hyundai.svg";
-import { useBackendStatus } from "../../hooks/useBackendStatus";
+import { useEffect, useRef, useState } from "react";
+import { LogOut } from "lucide-react";
+import bellIcon from "../../assets/figma-icon-bell.svg";
+import avatarImg from "../../assets/figma-avatar.png";
 
-export default function Navbar({ isCollapsed = false, onHamburgerClick }) {
-  const status = useBackendStatus();
+export default function Navbar() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const handleClickOutside = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [menuOpen]);
+
+  const handleLogout = () => {
+    setMenuOpen(false);
+    localStorage.removeItem("activePage");
+    window.location.reload();
+  };
 
   return (
-    <header className="absolute top-0 left-0 w-full z-10 bg-white border-b border-[rgba(0,133,212,0.2)] flex items-center justify-between h-[80px]">
-      {/*
-        Spacer mirrors sidebar width — unchanged from original:
-          mobile (<768px) : sidebar hidden → spacer = 0
-          md  (768–1023px): sidebar always 80px icon mode → spacer = 80px
-          lg+ (1024px+)   : follows isCollapsed → 80px or 280px
-      */}
-      <div
-        className={`flex-shrink-0 transition-all duration-300
-          w-0
-          md:w-[80px]
-          ${isCollapsed ? "lg:w-[80px]" : "lg:w-[280px]"}
-        `}
-      />
-
-      {/* Hamburger — mobile only, sits just after the zero-width spacer */}
+    <header
+      className="relative flex items-center justify-end h-[60px] bg-white rounded-[20px] flex-shrink-0 shadow-[0_20px_45px_-10px_rgba(61,12,146,0.18)]"
+      style={{ gap: 10, paddingRight: 16 }}
+    >
       <button
-        onClick={onHamburgerClick}
-        className="md:hidden flex items-center justify-center w-9 h-9 mr-1 rounded-lg hover:bg-[#e8f4fc] transition-colors flex-shrink-0"
-        aria-label="Toggle menu"
+        className="relative w-10 h-10 flex items-center justify-center rounded-full flex-shrink-0 hover:opacity-90 transition-opacity"
+        style={{ background: "#F7F4FD" }}
+        aria-label="Notifications"
       >
-        <Menu size={20} color="#0085D4" />
+        <img src={bellIcon} alt="" className="w-6 h-6" />
       </button>
 
-      {/* Hyundai logo */}
-      {/* <div className="flex-1 flex items-center justify-start pl-2 md:pl-6">
-        <img
-          src={hyundaiLogo}
-          alt="Hyundai"
-          className="h-[40px] md:h-[52px] w-auto object-contain"
-        />
-      </div> */}
-
-      {/* Right — Bell + Avatar */}
-      <div className="flex items-center gap-2 md:gap-3 pr-3 md:pr-5 flex-shrink-0">
-        <button className="relative w-9 h-9 flex items-center justify-center rounded-full hover:bg-[#e8f4fc] transition-colors">
-          <Bell size={20} color="#0085D4" strokeWidth={1.8} />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-red-500 border-2 border-white" />
-        </button>
-
+      <div className="relative" ref={menuRef}>
         <button
-          className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 hover:opacity-90 transition-colors"
-          style={{ backgroundColor: "#025283" }}
+          onClick={() => setMenuOpen((o) => !o)}
+          className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 hover:opacity-90 transition-opacity"
+          aria-label="Account"
         >
-          <span
-            className="font-poppins text-[12px] font-medium leading-none select-none"
-            style={{ color: "#FFFFFF" }}
-          >
-            AN
-          </span>
+          <img src={avatarImg} alt="Account" className="w-full h-full object-cover" />
         </button>
+
+        {menuOpen && (
+          <div
+            className="absolute right-0 top-[calc(100%+10px)] w-[240px] bg-white rounded-2xl shadow-[0_20px_45px_-10px_rgba(61,12,146,0.25)] border border-[rgba(97,32,214,0.08)] py-2 z-50"
+          >
+            <div className="flex items-center gap-3 px-4 py-3">
+              <img
+                src={avatarImg}
+                alt="Account"
+                className="w-10 h-10 rounded-full object-cover flex-shrink-0"
+              />
+              <div className="min-w-0">
+                <p className="font-poppins text-sm font-semibold truncate" style={{ color: "#00183E" }}>
+                  Admin
+                </p>
+                <p className="font-poppins text-xs text-gray-500 truncate">
+                  admin@daccess.co
+                </p>
+              </div>
+            </div>
+
+            <div className="h-px bg-gray-100 mx-2 my-1" />
+
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium text-left hover:bg-[#FEF2F2] transition-colors"
+              style={{ color: "#DC2626" }}
+            >
+              <LogOut size={16} />
+              Log out
+            </button>
+          </div>
+        )}
       </div>
     </header>
   );

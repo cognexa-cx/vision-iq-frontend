@@ -1,6 +1,5 @@
 // src/pages/LicensePage.jsx
 import React, { useState } from "react";
-import Footer from "../components/Common/Footer";
 
 // ─── Progress Bar Component ──────────────────────────────
 const ProgressBar = ({ value, max, color = "#0085D4", label }) => {
@@ -73,15 +72,12 @@ const FeatureRow = ({ feature, enabled }) => (
 );
 
 // ─── Page Component ──────────────────────────────────────
-export default function LicensePage({ isCollapsed = false }) {
+export default function LicensePage() {
   const [licenseKey, setLicenseKey] = useState("VQ-XXXX-XXXX-XXXX-XXXX");
 
   return (
     <div
-      className={`fixed font-poppins top-[80px] right-0 bottom-0 flex flex-col transition-all duration-300
-        left-0 md:left-[80px]
-        ${isCollapsed ? "lg:left-[80px]" : "lg:left-[280px]"}
-      `}
+      className="w-full h-full font-poppins flex flex-col"
       style={{ background: "#F4F6F8" }}
     >
       <div className="flex-1 min-h-0 overflow-y-auto flex flex-col">
@@ -271,7 +267,6 @@ export default function LicensePage({ isCollapsed = false }) {
           </div>
         </div>
       </div>
-      <Footer />
     </div>
   );
 }
