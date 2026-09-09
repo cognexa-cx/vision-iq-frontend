@@ -53,7 +53,7 @@ export default function MonitoringGridView({ zones, onSelectZone }: MonitoringGr
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   return (
-    <div className="flex-1 min-w-0 min-h-0 overflow-y-auto themed-scrollbar flex flex-col gap-3 pr-1">
+    <div className="flex-1 min-w-0 min-h-[320px] max-h-[60vh] md:max-h-none md:min-h-0 overflow-y-auto themed-scrollbar flex flex-col gap-3 pr-1">
       {zones.length === 0 && (
         <p className="text-sm text-gray-400 text-center py-8">No zones configured yet.</p>
       )}
@@ -67,17 +67,18 @@ export default function MonitoringGridView({ zones, onSelectZone }: MonitoringGr
             <button
               onClick={() => setExpandedId(isExpanded ? null : zone.id)}
               aria-expanded={isExpanded}
-              className="relative w-full h-[64px] flex-shrink-0 flex items-center gap-4 pl-6 pr-4 text-left hover:bg-[#F8F5FF] transition-colors"
+              className="relative w-full h-[64px] flex-shrink-0 flex items-center gap-2 sm:gap-4 pl-5 pr-3 sm:pl-6 sm:pr-4 text-left hover:bg-[#F8F5FF] transition-colors"
             >
               <span
                 className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[28px] rounded-full"
                 style={{ background: ACCENT_LINE_GRADIENT }}
               />
-              <span className="flex-1 font-poppins text-[15px] font-medium" style={{ color: "#00183E" }}>
+              <span className="flex-1 min-w-0 font-poppins text-[15px] font-medium whitespace-nowrap truncate" style={{ color: "#00183E" }}>
                 {zone.label}
               </span>
-              <span className="font-poppins text-xs text-gray-400">
-                {onlineCount}/{zone.cameras.length} online
+              <span className="font-poppins text-xs text-gray-400 whitespace-nowrap flex-shrink-0">
+                {onlineCount}/{zone.cameras.length}
+                <span className="hidden sm:inline"> online</span>
               </span>
               <ChevronDown
                 size={16}

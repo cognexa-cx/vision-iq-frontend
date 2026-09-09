@@ -25,7 +25,7 @@ export default function MonitoringAlerts({ events, onOpenDetails }: MonitoringAl
   const alerts = events.slice(0, ALERTS_LIMIT);
 
   return (
-    <div className="w-[300px] flex-shrink-0 rounded-[16px] bg-white flex flex-col overflow-hidden">
+    <div className="w-full md:w-[300px] md:flex-shrink-0 max-h-[60vh] md:max-h-none rounded-[16px] bg-white flex flex-col overflow-hidden">
       <h2 className="font-poppins text-base font-bold px-4 pt-4 pb-3 flex-shrink-0" style={{ color: "#E31C1C" }}>
         Alerts
       </h2>

@@ -72,7 +72,10 @@ export default function MonitoringPage() {
   return (
     <div className="w-full h-full flex flex-col font-poppins">
       {/* Header row: title (+ back arrow in Grid View) + view toggle */}
-      <div className="relative flex items-center justify-between flex-shrink-0" style={{ height: 82 }}>
+      <div
+        className="relative flex flex-wrap items-center justify-between gap-y-2 gap-x-3 flex-shrink-0"
+        style={{ minHeight: 82 }}
+      >
         <div className="flex items-center gap-3">
           {view === "grid" && (
             <button
@@ -86,7 +89,7 @@ export default function MonitoringPage() {
           )}
           <span className="w-[3px] h-[32px] rounded-full" style={{ background: ACCENT_LINE_GRADIENT, opacity: 0.84 }} />
           <h1
-            className="text-2xl font-semibold bg-clip-text text-transparent"
+            className="text-xl sm:text-2xl font-semibold bg-clip-text text-transparent"
             style={{ backgroundImage: HEADING_TEXT_GRADIENT }}
           >
             Monitoring
@@ -96,10 +99,12 @@ export default function MonitoringPage() {
         <MonitoringViewToggle view={view} onChange={setView} />
       </div>
 
-      {/* Content: main panel (map or grid) + Alerts rail, shared outer card */}
+      {/* Content: main panel (map or grid) + Alerts rail, shared outer card.
+          Row on md+ screens (matches the Figma layout); stacks on narrower
+          ones where a fixed-width side rail next to the map has no room. */}
       <div className="flex-1 min-h-0 flex flex-col">
         <div
-          className="flex-1 min-h-0 rounded-[20px] shadow-[0_20px_45px_-10px_rgba(61,12,146,0.18)] flex gap-4 p-4 overflow-hidden"
+          className="flex-1 min-h-0 rounded-[20px] shadow-[0_20px_45px_-10px_rgba(61,12,146,0.18)] flex flex-col md:flex-row gap-4 p-4 overflow-y-auto md:overflow-hidden"
           style={{ background: "rgba(255,255,255,0.6)" }}
         >
           {view === "map" ? (

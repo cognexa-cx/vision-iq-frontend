@@ -29,9 +29,9 @@ describe("MonitoringGridView", () => {
   it("renders every zone's label and online/total count, collapsed by default", () => {
     render(<MonitoringGridView zones={zones} onSelectZone={vi.fn()} />);
     expect(screen.getByText("Zone 01")).toBeInTheDocument();
-    expect(screen.getByText("1/2 online")).toBeInTheDocument();
+    expect(screen.getByText((_, el) => el?.textContent === "1/2 online")).toBeInTheDocument();
     expect(screen.getByText("Zone 02")).toBeInTheDocument();
-    expect(screen.getByText("1/1 online")).toBeInTheDocument();
+    expect(screen.getByText((_, el) => el?.textContent === "1/1 online")).toBeInTheDocument();
     expect(screen.queryByText("CAM-01-1")).not.toBeInTheDocument();
   });
 

@@ -68,7 +68,7 @@ export default function MonitoringMapView({ totalCameras, activeZone }: Monitori
     <div className="relative flex-1 min-w-0 flex flex-col gap-2">
       <div
         ref={containerRef}
-        className="relative flex-1 min-h-0 rounded-[20px] overflow-hidden bg-black"
+        className="relative w-full aspect-video md:aspect-auto md:flex-1 md:min-h-0 rounded-[20px] overflow-hidden bg-black"
         style={{ cursor: canPan ? (dragging ? "grabbing" : "grab") : "default" }}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
@@ -85,16 +85,16 @@ export default function MonitoringMapView({ totalCameras, activeZone }: Monitori
           />
         </div>
 
-        <span className="absolute top-4 left-5 font-poppins text-sm font-semibold text-white drop-shadow pointer-events-none">
+        <span className="absolute top-3 left-4 sm:top-4 sm:left-5 font-poppins text-xs sm:text-sm font-semibold text-white drop-shadow pointer-events-none whitespace-nowrap">
           Map View
         </span>
 
-        <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-poppins text-xs font-medium text-white/90 drop-shadow bg-black/25 px-3 py-1 rounded-full pointer-events-none">
+        <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-poppins text-[10px] sm:text-xs font-medium text-white/90 drop-shadow bg-black/25 px-2.5 py-1 sm:px-3 rounded-full pointer-events-none whitespace-nowrap">
           Total Cameras: {totalCameras}
         </span>
 
         {activeZone && (
-          <span className="absolute left-8 bottom-6 font-poppins text-2xl font-semibold text-white drop-shadow pointer-events-none">
+          <span className="absolute left-4 bottom-4 sm:left-8 sm:bottom-6 font-poppins text-base sm:text-2xl font-semibold text-white drop-shadow pointer-events-none whitespace-nowrap">
             {activeZone.label}
           </span>
         )}
