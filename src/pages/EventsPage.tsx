@@ -1,9 +1,10 @@
 // src/pages/EventsPage.tsx
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
-import { Filter as FilterIcon } from "lucide-react";
+import { Filter as FilterIcon, Search } from "lucide-react";
 import { getEvents } from "../api/events";
-import { DUMMY_EVENTS, BASE_EVENT_TYPES, SEVERITY_ORDER, EVENTS_PER_PAGE, EventRecord } from "../data/eventsData";
+import { DUMMY_EVENTS, BASE_EVENT_TYPES, EVENTS_PER_PAGE, EventRecord } from "../data/eventsData";
 import { buildDateRangeParams } from "../utils/eventFormatters";
+import { filterEvents, sortEvents, computeSrNoRanking, hasActiveEventFilters, DEFAULT_DATE_RANGE } from "../utils/eventFiltering";
 import { ACCENT_LINE_GRADIENT, HEADING_TEXT_GRADIENT, BRAND_GRADIENT } from "../theme";
 import EventFilterPanel from "../components/Events/EventFilterPanel";
 import EventsTable from "../components/Events/EventsTable";
@@ -144,38 +145,16 @@ export default function EventsPage() {
   // All filters (including type/date range, which are also sent to the real
   // API as query params) are re-applied client-side too, so they still work
   // correctly against the sample-data fallback when the backend is down.
-  const filteredEvents = useMemo(() => {
-    let result = events;
-    if (typeFilter !== "all") {
-      result = result.filter((e) => (e.type || e.event_type) === typeFilter);
-    }
-    const dateParams = buildDateRangeParams(dateRange, customStart, customEnd);
-    if (dateParams.start) {
-      const startMs = new Date(dateParams.start).getTime();
-      const endMs = dateParams.end ? new Date(dateParams.end).getTime() : Infinity;
-      result = result.filter((e) => {
-        const t = new Date(e.created_at || e.timestamp || 0).getTime();
-        return t >= startMs && t <= endMs;
-      });
-    }
-    if (cameraFilter) result = result.filter((e) => (e.camera_name || e.camera_id) === cameraFilter);
-    if (severityFilter !== "all") result = result.filter((e) => e.severity === severityFilter);
-    if (searchFilter) {
-      const q = searchFilter.toLowerCase();
-      result = result.filter(
-        (e) =>
-          String(e.camera_name || e.camera_id || "").toLowerCase().includes(q) ||
-          String(e.type || e.event_type || "").toLowerCase().includes(q),
-      );
-    }
-    return [...result].sort((a, b) => {
-      const aTime = new Date(a.created_at || a.timestamp || 0).getTime();
-      const bTime = new Date(b.created_at || b.timestamp || 0).getTime();
-      if (sortOrder === "oldest") return aTime - bTime;
-      if (sortOrder === "severity") return (SEVERITY_ORDER[a.severity as string] ?? 99) - (SEVERITY_ORDER[b.severity as string] ?? 99);
-      return bTime - aTime;
-    });
-  }, [events, typeFilter, dateRange, customStart, customEnd, cameraFilter, severityFilter, searchFilter, sortOrder]);
+  // Pure logic lives in utils/eventFiltering.ts so it's unit-testable
+  // without rendering this component.
+  const filteredEvents = useMemo(
+    () =>
+      sortEvents(
+        filterEvents(events, { typeFilter, dateRange, customStart, customEnd, cameraFilter, severityFilter, searchFilter }),
+        sortOrder,
+      ),
+    [events, typeFilter, dateRange, customStart, customEnd, cameraFilter, severityFilter, searchFilter, sortOrder],
+  );
 
   const totalPages = Math.max(1, Math.ceil(filteredEvents.length / EVENTS_PER_PAGE));
   const paginatedEvents = useMemo(
@@ -186,17 +165,22 @@ export default function EventsPage() {
   // Sr.No. is a total record count, independent of the current Sort by
   // selection — the newest event always gets the highest number, the oldest
   // always gets 1, no matter how the table is currently sorted or paginated.
-  const srNoByEventId = useMemo(() => {
-    const newestFirst = [...filteredEvents].sort((a, b) => {
-      const aTime = new Date(a.created_at || a.timestamp || 0).getTime();
-      const bTime = new Date(b.created_at || b.timestamp || 0).getTime();
-      return bTime - aTime;
-    });
-    const map = new Map<string | number, number>();
-    const total = newestFirst.length;
-    newestFirst.forEach((e, i) => map.set(e.id, total - i));
-    return map;
-  }, [filteredEvents]);
+  const srNoByEventId = useMemo(() => computeSrNoRanking(filteredEvents), [filteredEvents]);
+
+  const isFiltered = hasActiveEventFilters({
+    typeFilter, dateRange, customStart, customEnd, cameraFilter, severityFilter, searchFilter,
+  });
+
+  const handleClearAll = () => {
+    setTypeFilter("all");
+    setSeverityFilter("all");
+    setCameraFilter("");
+    setDateRange(DEFAULT_DATE_RANGE);
+    setCustomStart("");
+    setCustomEnd("");
+    setSearchFilter("");
+    // sortOrder is intentionally left as-is — it's display order, not a filter.
+  };
 
   return (
     <>
@@ -213,15 +197,36 @@ export default function EventsPage() {
             </h1>
           </div>
 
-          <div className="relative" ref={filterRef}>
-            <button
-              onClick={() => setFilterOpen((o) => !o)}
-              className="flex items-center gap-2 h-10 px-4 rounded-[10px] text-white text-sm font-semibold"
-              style={{ background: BRAND_GRADIENT }}
-            >
-              Filter
-              <FilterIcon size={14} fill="white" />
-            </button>
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+              <input
+                type="text"
+                value={searchFilter}
+                onChange={(e) => setSearchFilter(e.target.value)}
+                placeholder="Search events…"
+                aria-label="Search events"
+                className="h-10 w-[260px] pl-10 pr-3 rounded-[10px] bg-white text-sm border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#3D0C92]/20"
+                style={{ color: "#00183E" }}
+              />
+            </div>
+
+            <div className="relative" ref={filterRef}>
+              <button
+                onClick={() => setFilterOpen((o) => !o)}
+                className="relative flex items-center gap-2 h-10 px-4 rounded-[10px] text-white text-sm font-semibold"
+                style={{ background: BRAND_GRADIENT }}
+              >
+                Filter
+                <FilterIcon size={14} fill="white" />
+                {isFiltered && (
+                  <span
+                    className="absolute -top-1 -right-1 w-3 h-3 rounded-full border-2 border-white"
+                    style={{ background: "#EF4444" }}
+                    aria-label="Filters active"
+                  />
+                )}
+              </button>
 
             {filterOpen && (
               <EventFilterPanel
@@ -232,12 +237,14 @@ export default function EventsPage() {
                 severityFilter={severityFilter} setSeverityFilter={setSeverityFilter}
                 cameraFilter={cameraFilter} setCameraFilter={setCameraFilter}
                 sortOrder={sortOrder} setSortOrder={setSortOrder}
-                searchFilter={searchFilter} setSearchFilter={setSearchFilter}
+                searchFilter={searchFilter}
                 cameraOptions={cameraOptions}
                 typeOptions={typeOptions}
                 onClose={() => setFilterOpen(false)}
+                onClearAll={handleClearAll}
               />
             )}
+            </div>
           </div>
         </div>
 
