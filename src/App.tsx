@@ -6,6 +6,7 @@ import DashboardPage from "./pages/DashboardPage";
 import MonitoringPage from "./pages/MonitoringPage";
 import AnalyticsPage from "./pages/AnalyticsPage";
 import EventsPage from "./pages/EventsPage";
+import CameraMasterPage from "./pages/CameraMasterPage";
 import SettingsPage from "./pages/SettingsPage";
 import LicensePage from "./pages/LicensePage";
 import FireDetectionPage from "./pages/FireDetectionPage";
@@ -71,6 +72,7 @@ export default function App() {
             {activePage === "monitoring" && <MonitoringPage />}
             {activePage === "analytics" && <AnalyticsPage />}
             {activePage === "events" && <EventsPage />}
+            {activePage === "cameraMaster" && <CameraMasterPage />}
             {activePage === "setting" && <SettingsPage />}
             {activePage === "license" && <LicensePage />}
             {activePage === "fire" && <FireDetectionPage />}

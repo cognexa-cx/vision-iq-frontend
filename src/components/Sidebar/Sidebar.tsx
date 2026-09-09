@@ -1,3 +1,4 @@
+import { Camera } from "lucide-react";
 import { BRAND_GRADIENT } from "../../theme";
 import dashboardIcon from "../../assets/figma-icon-dashboard.svg";
 import monitorIcon from "../../assets/figma-icon-monitor.svg";
@@ -5,10 +6,15 @@ import eventIcon from "../../assets/figma-icon-event.svg";
 import settingsIcon from "../../assets/figma-icon-settings.svg";
 import licenseIcon from "../../assets/figma-icon-license.svg";
 
+// Most nav icons are Figma-exported SVGs (`icon`); Camera Master has no
+// exported asset yet, so it uses a lucide component (`Icon`) instead —
+// rendered the same size/color, just without the invert-on-active filter
+// trick since lucide icons take a `color` prop directly.
 const NAV_ITEMS = [
   { id: "dashboard", label: "Dashboard", icon: dashboardIcon },
   { id: "monitoring", label: "Monitoring", icon: monitorIcon },
   { id: "events", label: "Events", icon: eventIcon },
+  { id: "cameraMaster", label: "Camera Master", Icon: Camera },
   { id: "setting", label: "Settings", icon: settingsIcon },
   { id: "license", label: "License", icon: licenseIcon },
 ];
@@ -22,7 +28,7 @@ export default function Sidebar({ active = "dashboard", onNavigate, collapsed = 
           : "w-[256px] rounded-[30px] bg-white/90"
       }`}
     >
-      {NAV_ITEMS.map(({ id, label, icon }) => {
+      {NAV_ITEMS.map(({ id, label, icon, Icon }) => {
         const isActive = active === id;
         return (
           <button
@@ -42,12 +48,16 @@ export default function Sidebar({ active = "dashboard", onNavigate, collapsed = 
                 : {}
             }
           >
-            <img
-              src={icon}
-              alt=""
-              className="w-6 h-6 flex-shrink-0"
-              style={isActive ? { filter: "brightness(0) invert(1)" } : {}}
-            />
+            {Icon ? (
+              <Icon size={24} className="flex-shrink-0" color={isActive ? "#FFFFFF" : "#220E97"} />
+            ) : (
+              <img
+                src={icon}
+                alt=""
+                className="w-6 h-6 flex-shrink-0"
+                style={isActive ? { filter: "brightness(0) invert(1)" } : {}}
+              />
+            )}
             <span
               className="font-poppins text-[16px] leading-[1.4] whitespace-nowrap overflow-x-hidden overflow-y-visible transition-[max-width,opacity] duration-300 ease-out inline-block"
               style={{
