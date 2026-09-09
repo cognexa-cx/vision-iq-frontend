@@ -9,6 +9,7 @@ import EventsPage from "./pages/EventsPage";
 import CameraMasterPage from "./pages/CameraMasterPage";
 import SettingsPage from "./pages/SettingsPage";
 import LicensePage from "./pages/LicensePage";
+import LogsPage from "./pages/LogsPage";
 import FireDetectionPage from "./pages/FireDetectionPage";
 import visionIqImg from "./assets/figma-logo-exact.png";
 import visionIqIcon from "./assets/figma-logo-icon-only.png";
@@ -75,6 +76,7 @@ export default function App() {
             {activePage === "cameraMaster" && <CameraMasterPage />}
             {activePage === "setting" && <SettingsPage />}
             {activePage === "license" && <LicensePage />}
+            {activePage === "logs" && <LogsPage />}
             {activePage === "fire" && <FireDetectionPage />}
           </main>
         </div>

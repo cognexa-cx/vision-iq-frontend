@@ -1,4 +1,4 @@
-import { Camera } from "lucide-react";
+import { Camera, ScrollText } from "lucide-react";
 import { BRAND_GRADIENT } from "../../theme";
 import dashboardIcon from "../../assets/figma-icon-dashboard.svg";
 import monitorIcon from "../../assets/figma-icon-monitor.svg";
@@ -6,10 +6,12 @@ import eventIcon from "../../assets/figma-icon-event.svg";
 import settingsIcon from "../../assets/figma-icon-settings.svg";
 import licenseIcon from "../../assets/figma-icon-license.svg";
 
-// Most nav icons are Figma-exported SVGs (`icon`); Camera Master has no
-// exported asset yet, so it uses a lucide component (`Icon`) instead —
-// rendered the same size/color, just without the invert-on-active filter
-// trick since lucide icons take a `color` prop directly.
+// Most nav icons are Figma-exported SVGs (`icon`); Camera Master and Logs
+// have no exported asset yet (the Logs Figma mock even reuses the Settings
+// gear glyph for its own nav item — a placeholder mistake, not intentional),
+// so both use a lucide component (`Icon`) instead — rendered the same
+// size/color, just without the invert-on-active filter trick since lucide
+// icons take a `color` prop directly.
 const NAV_ITEMS = [
   { id: "dashboard", label: "Dashboard", icon: dashboardIcon },
   { id: "monitoring", label: "Monitoring", icon: monitorIcon },
@@ -17,6 +19,7 @@ const NAV_ITEMS = [
   { id: "cameraMaster", label: "Camera Master", Icon: Camera },
   { id: "setting", label: "Settings", icon: settingsIcon },
   { id: "license", label: "License", icon: licenseIcon },
+  { id: "logs", label: "Logs", Icon: ScrollText },
 ];
 
 export default function Sidebar({ active = "dashboard", onNavigate, collapsed = true }) {
