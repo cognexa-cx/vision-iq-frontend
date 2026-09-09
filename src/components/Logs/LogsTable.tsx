@@ -6,25 +6,25 @@ export interface LogsTableProps {
   logs: LogEntry[];
 }
 
-const headerCellCls = "px-2 text-sm font-semibold";
-const rowCellCls = "px-2 text-sm";
+const headerCellCls = "px-4 text-xs font-semibold whitespace-nowrap";
+const rowCellCls = "px-4 py-2.5 text-sm";
 
 export default function LogsTable({ logs }: LogsTableProps) {
   return (
     <div className="flex-1 min-h-0 overflow-auto themed-scrollbar">
-      <table className="text-left" style={{ tableLayout: "fixed", borderCollapse: "separate", minWidth: 800, width: "100%" }}>
+      <table className="text-left" style={{ tableLayout: "fixed", borderCollapse: "separate", borderSpacing: 0, width: "100%", minWidth: 700 }}>
         <colgroup>
+          <col style={{ width: 160 }} />
           <col style={{ width: 170 }} />
-          <col style={{ width: 180 }} />
           <col style={{ width: "auto" }} />
-          <col style={{ width: 120 }} />
+          <col style={{ width: 110 }} />
         </colgroup>
         <thead style={{ position: "sticky", top: 0, background: "#F8F8FE", zIndex: 1 }}>
-          <tr style={{ height: 56 }}>
+          <tr style={{ height: 44 }}>
             <th className={`${headerCellCls} pl-6`} style={{ color: "#003473" }}>Time</th>
             <th className={headerCellCls} style={{ color: "#003473" }}>Event Type</th>
             <th className={headerCellCls} style={{ color: "#003473" }}>Description</th>
-            <th className={headerCellCls} style={{ color: "#003473" }}>Status</th>
+            <th className={`${headerCellCls} pr-6`} style={{ color: "#003473" }}>Status</th>
           </tr>
         </thead>
         <tbody>
@@ -38,12 +38,12 @@ export default function LogsTable({ logs }: LogsTableProps) {
             logs.map((log) => {
               const sev = STATUS_COLORS[log.status];
               return (
-                <tr key={log.id} className="border-t" style={{ height: 56, borderColor: "#F0F0F0" }}>
-                  <td className={`${rowCellCls} pl-6`} style={{ color: "#00183E" }}>{formatLogTime(log.time)}</td>
-                  <td className={rowCellCls} style={{ color: "#00183E" }}>{log.eventType}</td>
+                <tr key={log.id} className="border-t" style={{ borderColor: "#F0F0F0" }}>
+                  <td className={`${rowCellCls} pl-6 whitespace-nowrap`} style={{ color: "#00183E" }}>{formatLogTime(log.time)}</td>
+                  <td className={`${rowCellCls} whitespace-nowrap`} style={{ color: "#00183E" }}>{log.eventType}</td>
                   <td className={`${rowCellCls} truncate`} style={{ color: "#00183E" }}>{log.description}</td>
-                  <td className={rowCellCls}>
-                    <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold" style={{ background: sev.bg, color: sev.text }}>
+                  <td className={`${rowCellCls} pr-6`}>
+                    <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap" style={{ background: sev.bg, color: sev.text }}>
                       {log.status}
                     </span>
                   </td>
