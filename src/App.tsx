@@ -9,7 +9,6 @@ import EventsPage from "./pages/EventsPage";
 import SettingsPage from "./pages/SettingsPage";
 import LicensePage from "./pages/LicensePage";
 import FireDetectionPage from "./pages/FireDetectionPage";
-import AddCameraModal from "./components/Monitoring/AddCameraModal";
 import visionIqImg from "./assets/figma-logo-exact.png";
 import visionIqIcon from "./assets/figma-logo-icon-only.png";
 
@@ -18,7 +17,6 @@ export default function App() {
     () => localStorage.getItem("activePage") || "dashboard",
   );
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
-  const [showAddCamera, setShowAddCamera] = useState(false);
 
   const handleNavigate = (page) => {
     localStorage.setItem("activePage", page);
@@ -70,9 +68,7 @@ export default function App() {
 
           <main className="flex-1 min-h-0">
             {activePage === "dashboard" && <DashboardPage />}
-            {activePage === "monitoring" && (
-              <MonitoringPage onAddCamera={() => setShowAddCamera(true)} />
-            )}
+            {activePage === "monitoring" && <MonitoringPage />}
             {activePage === "analytics" && <AnalyticsPage />}
             {activePage === "events" && <EventsPage />}
             {activePage === "setting" && <SettingsPage />}
@@ -83,10 +79,6 @@ export default function App() {
       </div>
 
       <Footer />
-
-      {showAddCamera && (
-        <AddCameraModal onClose={() => setShowAddCamera(false)} />
-      )}
     </div>
   );
 }

@@ -1,175 +1,125 @@
-import { useState, useRef, useEffect } from "react";
-import CameraGrid from "../components/Monitoring/CameraGrid";
-import AddCameraModal from "../components/Monitoring/AddCameraModal";
+// src/pages/MonitoringPage.tsx
+import { useState, useEffect, useCallback } from "react";
+import { ArrowLeft } from "lucide-react";
+import { getCameras } from "../api/cameras";
+import { getEvents } from "../api/events";
+import { DUMMY_EVENTS, EventRecord } from "../data/eventsData";
+import { DUMMY_ZONES, DUMMY_TOTAL_CAMERAS, ZoneRecord } from "../data/monitoringData";
+import { ACCENT_LINE_GRADIENT, HEADING_TEXT_GRADIENT, BRAND_GRADIENT } from "../theme";
+import MonitoringViewToggle, { MonitoringView } from "../components/Monitoring/MonitoringViewToggle";
+import MonitoringMapView from "../components/Monitoring/MonitoringMapView";
+import MonitoringGridView from "../components/Monitoring/MonitoringGridView";
+import MonitoringAlerts, { AlertDetailsPayload } from "../components/Monitoring/MonitoringAlerts";
+import MonitoringAlertModal from "../components/Monitoring/MonitoringAlertModal";
 
-// Enabled modes first, then disabled — keeps the dropdown ordered by
-// what's actually usable right now.
-const MODES = [
-  "Fire Detection",
-  "Animal Detection",
-  "PPE Kit Detection",
-  "Railway Detection",
-  "Vehicle Detection",
-  "Fall Detection",
-  "Head Count",
-  "Secure Area",
-  "Number Plate",
-  "Crowd Monitoring",
-];
+const VIEW_STORAGE_KEY = "monitoringView";
 
-// Only these are wired up against a confirmed-working backend right now —
-// the rest stay visible (matches the design) but disabled until confirmed.
-const ENABLED_MODES = new Set([
-  "Fire Detection",
-  "Animal Detection",
-  "PPE Kit Detection",
-]);
+function readStoredView(): MonitoringView {
+  return localStorage.getItem(VIEW_STORAGE_KEY) === "grid" ? "grid" : "map";
+}
 
-export default function MonitoringPage({ onAddCamera }) {
-  const [showModeDropdown, setShowModeDropdown] = useState(false);
-  const [selectedMode, setSelectedMode] = useState("");
-  const [showAddCamera, setShowAddCamera] = useState(false);
-  const [cloneCount, setCloneCount] = useState(0);
+export default function MonitoringPage() {
+  const [view, setViewState] = useState<MonitoringView>(readStoredView);
+  const [activeZone, setActiveZone] = useState<ZoneRecord | undefined>();
+  const [totalCameras, setTotalCameras] = useState(DUMMY_TOTAL_CAMERAS);
+  const [zones, setZones] = useState<ZoneRecord[]>(DUMMY_ZONES);
+  const [events, setEvents] = useState<EventRecord[]>(DUMMY_EVENTS);
+  const [selectedAlert, setSelectedAlert] = useState<AlertDetailsPayload | null>(null);
 
-  const cameraGridRefetchRef = useRef(null);
-  const dropdownRef = useRef(null);
-
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setShowModeDropdown(false);
+  const fetchMonitoringData = useCallback(async () => {
+    try {
+      const cameras = await getCameras();
+      setTotalCameras(cameras.length);
+      if (cameras.length > 0) {
+        setZones(
+          cameras.map((c, i) => ({
+            id: String(c.id),
+            label: `Zone ${String(i + 1).padStart(2, "0")}`,
+            cameras: [{ id: c.id, name: c.name, enabled: c.enabled ?? c.status?.connected }],
+          })),
+        );
       }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    } catch {
+      // Backend unreachable — keep showing sample zones/camera count.
+      setTotalCameras(DUMMY_TOTAL_CAMERAS);
+      setZones(DUMMY_ZONES);
+    }
+
+    try {
+      const data = await getEvents({ limit: 20 });
+      setEvents(data as EventRecord[]);
+    } catch {
+      setEvents(DUMMY_EVENTS);
+    }
   }, []);
 
-  function handleOpenAddCamera() {
-    if (onAddCamera) onAddCamera();
-    else setShowAddCamera(true);
-  }
+  useEffect(() => {
+    fetchMonitoringData();
+    const id = setInterval(fetchMonitoringData, 30_000);
+    return () => clearInterval(id);
+  }, [fetchMonitoringData]);
 
-  function handleCameraAdded() {
-    cameraGridRefetchRef.current?.();
-  }
+  const setView = (next: MonitoringView) => {
+    setViewState(next);
+    localStorage.setItem(VIEW_STORAGE_KEY, next);
+  };
+
+  const handleSelectZone = (zone: ZoneRecord) => {
+    setActiveZone(zone);
+    setView("map");
+  };
 
   return (
-    <div
-      className="w-full h-full font-poppins flex flex-col"
-      style={{ background: "#F8F8F8" }}
-    >
-      <div className="flex-1 min-h-0 overflow-y-auto flex flex-col">
-        <div className="flex-1 flex flex-col pt-4 px-3 sm:pt-5 sm:px-5">
-          {/* Header row */}
-          <div className="flex flex-wrap items-start justify-between gap-3 mb-4 flex-shrink-0">
-            <h1
-              className="text-xl sm:text-2xl font-semibold"
-              style={{ color: "#01397C" }}
+    <div className="w-full h-full flex flex-col font-poppins">
+      {/* Header row: title (+ back arrow in Grid View) + view toggle */}
+      <div className="relative flex items-center justify-between flex-shrink-0" style={{ height: 82 }}>
+        <div className="flex items-center gap-3">
+          {view === "grid" && (
+            <button
+              onClick={() => setView("map")}
+              aria-label="Back to Map view"
+              className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
+              style={{ background: BRAND_GRADIENT }}
             >
-              Camera Overview
-            </h1>
-
-            <div className="flex items-center gap-2 sm:gap-3">
-              {/* Add Camera */}
-              <button
-                onClick={handleOpenAddCamera}
-                className="flex items-center gap-1.5 px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg font-poppins text-[13px] sm:text-[14px] font-medium text-white"
-                style={{
-                  background:
-                    "linear-gradient(180deg, #024167 0%, #0085D4 100%)",
-                }}
-              >
-                Add Camera{" "}
-                <span className="text-base leading-none font-bold">+</span>
-              </button>
-
-              {/* Mode dropdown */}
-              <div className="relative" ref={dropdownRef}>
-                <button
-                  onClick={() =>
-                    cloneCount > 0 && setShowModeDropdown((p) => !p)
-                  }
-                  disabled={cloneCount === 0}
-                  title={
-                    cloneCount === 0
-                      ? "Add a clone to enable mode selection"
-                      : undefined
-                  }
-                  className="flex items-center gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg font-poppins text-[13px] sm:text-[14px] font-medium text-white disabled:opacity-40 disabled:cursor-not-allowed transition-opacity"
-                  style={{
-                    background:
-                      "linear-gradient(180deg, #05517E 0%, #0085D4 100%)",
-                  }}
-                >
-                  {selectedMode || "Mode"} <span className="text-xs">▼</span>
-                </button>
-
-                {showModeDropdown && (
-                  <div className="absolute right-0 top-12 z-20 bg-white rounded-xl shadow-lg border border-gray-100 py-1 w-52 sm:w-56">
-                    {selectedMode && (
-                      <button
-                        onClick={() => {
-                          setSelectedMode("");
-                          setShowModeDropdown(false);
-                        }}
-                        className="w-full text-left px-4 py-2.5 font-poppins text-[13px] hover:bg-red-50 transition-colors border-b border-gray-100"
-                        style={{ color: "#ef4444", fontWeight: 500 }}
-                      >
-                        ✕ Clear selection
-                      </button>
-                    )}
-
-                    {MODES.map((mode) => {
-                      const isEnabled = ENABLED_MODES.has(mode);
-                      return (
-                        <button
-                          key={mode}
-                          disabled={!isEnabled}
-                          onClick={() => {
-                            if (!isEnabled) return;
-                            setSelectedMode(mode);
-                            setShowModeDropdown(false);
-                          }}
-                          title={isEnabled ? undefined : "Coming soon"}
-                          className={`w-full text-left px-4 py-2.5 font-poppins text-[13px] transition-colors disabled:cursor-not-allowed ${isEnabled ? "hover:bg-blue-50" : ""
-                            }`}
-                          style={
-                            !isEnabled
-                              ? { color: "#B7C2CC", fontWeight: 400 }
-                              : {
-                                color:
-                                  selectedMode === mode
-                                    ? "#0085D4"
-                                    : "#333",
-                                fontWeight:
-                                  selectedMode === mode ? 600 : 400,
-                              }
-                          }
-                        >
-                          {mode}
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <CameraGrid
-            onRefetchReady={(fn) => (cameraGridRefetchRef.current = fn)}
-            onClonesChange={setCloneCount}
-            selectedMode={selectedMode}
-          />
+              <ArrowLeft size={14} color="#fff" />
+            </button>
+          )}
+          <span className="w-[3px] h-[32px] rounded-full" style={{ background: ACCENT_LINE_GRADIENT, opacity: 0.84 }} />
+          <h1
+            className="text-2xl font-semibold bg-clip-text text-transparent"
+            style={{ backgroundImage: HEADING_TEXT_GRADIENT }}
+          >
+            Monitoring
+          </h1>
         </div>
+
+        <MonitoringViewToggle view={view} onChange={setView} />
       </div>
 
-      {showAddCamera && (
-        <AddCameraModal
-          onClose={() => setShowAddCamera(false)}
-          onAdded={handleCameraAdded}
-        />
-      )}
+      {/* Content: main panel (map or grid) + Alerts rail, shared outer card */}
+      <div className="flex-1 min-h-0 flex flex-col">
+        <div
+          className="flex-1 min-h-0 rounded-[20px] shadow-[0_20px_45px_-10px_rgba(61,12,146,0.18)] flex gap-4 p-4 overflow-hidden"
+          style={{ background: "rgba(255,255,255,0.6)" }}
+        >
+          {view === "map" ? (
+            <MonitoringMapView totalCameras={totalCameras} activeZone={activeZone} />
+          ) : (
+            <MonitoringGridView zones={zones} onSelectZone={handleSelectZone} />
+          )}
+          <MonitoringAlerts events={events} onOpenDetails={setSelectedAlert} />
+        </div>
+
+        {view === "map" && (
+          <p className="font-poppins text-sm text-gray-500 pt-3 flex-shrink-0">Hundai Plant Zones</p>
+        )}
+      </div>
+
+      <MonitoringAlertModal
+        event={selectedAlert?.event}
+        photoSrc={selectedAlert?.photoSrc}
+        onClose={() => setSelectedAlert(null)}
+      />
     </div>
   );
 }
