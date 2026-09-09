@@ -6,6 +6,11 @@
 /** Primary brand gradient — active nav items, footer, primary buttons. */
 export const BRAND_GRADIENT = "linear-gradient(135deg, #3D0C92 0%, #031EBA 100%)";
 
+/** Purple-dominant gradient for large filled surfaces (hero banners) — the
+ *  full-strength blue endpoint in BRAND_GRADIENT reads as "too blue" once
+ *  it covers a big area, so large surfaces stay in the purple family. */
+export const HERO_GRADIENT = "linear-gradient(135deg, #2E0A66 0%, #6020D6 55%, #3D0C92 100%)";
+
 /** Soft accent line used next to page/section titles. */
 export const ACCENT_LINE_GRADIENT = "linear-gradient(180deg, #C7F1FF 0%, #6020D6 100%)";
 
